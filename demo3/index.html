@@ -42,8 +42,13 @@ LED: <span id="led" >???</span>
 	var devices;
 	var device;
 
-	// Call sparkLogin function with a callback function
-	// that will be called on successful login:
+	/*
+	 * As soon as the page loads, call the sparkLogin() function
+	 * to populate the "spark-login" div with the login box.
+	 * Once a successful login has occured, the login box will be
+	 * hidden and the controls made visible. An attempt to get the
+	 * list of devices will then be made.
+	 */
 	sparkLogin(function(data) {
 		// hide the login button
 		show("spark-login", 0);
@@ -54,6 +59,12 @@ LED: <span id="led" >???</span>
 		spark.listDevices().then(handle_devices, error);
 	});
 
+	/*
+	 * This function is called once the login has completed and
+	 * requested the list of devices from the spark.io server.
+	 * It will generate the radio boxes for the available cores,
+	 * marking the first online one by default.
+	 */
 	function handle_devices(devices_arg)
 	{
 		devices = devices_arg;
@@ -81,6 +92,11 @@ LED: <span id="led" >???</span>
 		}
 	}
 
+	/*
+	 * This function is called by the buttons when they are clicked.
+	 * If the button is pushed before the device global is assigned,
+	 * nothing will happen.
+	 */
 	function set_led(value)
 	{
 		if (!device)
@@ -93,6 +109,21 @@ LED: <span id="led" >???</span>
 			console.log("SUCCESS: ", data);
 		});
 	}
+
+	/*
+	 * Start a timer every 1 second to check the state of the LED.
+	 */
+	var interval = setInterval(function() {
+		if (!device)
+			return;
+		device.getVariable('read', function(err,data) {
+			if (err) {
+				return error(err);
+			}
+			//console.log(data);
+			document.getElementById("led").innerHTML = data.result;
+		});
+	}, 1000);
 </script>
 
 </body>
