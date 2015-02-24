@@ -30,9 +30,11 @@ You can also use curl to do this query, although you will need two pieces
 of information: your private access token and your core ID.
 
 ![Device ID](images/core-id.png)
+
 For the access token, click on the Gear Box icon and copy the token.
 
 ![Access Token](images/access-token.png)
+
 For the device id, select the Cores icon (looks like a target reticle)
 and then click the dropdown next to the core name to get the id.
 
