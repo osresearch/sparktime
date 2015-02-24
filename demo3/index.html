@@ -13,121 +13,121 @@
 <div id="spark-login"></div>
 
 <div id="controls" style="display:none;">
-Devices:
 <form>
-	<div id="devices"></div>
+Devices:
+<div id="devices"></div>
 </form>
 
-LED: <span id="led_state" >???</span>
+LED: <span id="led_state" >???</span><br/>
 <button onclick="javascript:set_led(1)">On</button>
 <button onclick="javascript:set_led(0)">Off</button>
 </div>
 
 <script>
-	/*
-	 * Once the list of devices has been fetched, one will be
-	 * selected and stored in this global.
-	 */
-	var device;
+/*
+ * Once the list of devices has been fetched, one will be
+ * selected and stored in this global.
+ */
+var device;
 
-	/*
-	 * As soon as the page loads, call the sparkLogin() function
-	 * to populate the "spark-login" div with the login box.
-	 * Once a successful login has occured, the login box will be
-	 * hidden and the controls made visible. An attempt to get the
-	 * list of devices will then be made.
-	 */
-	sparkLogin(function(data) {
-		// hide the login button and show the controls
-		document.getElementById("spark-login").style.display = "none";
-		document.getElementById("controls").style.display = "inline-block";
-		console.log(data);
+/*
+ * As soon as the page loads, call the sparkLogin() function
+ * to populate the "spark-login" div with the login box.
+ * Once a successful login has occured, the login box will be
+ * hidden and the controls made visible. An attempt to get the
+ * list of devices will then be made.
+ */
+sparkLogin(function(data) {
+	// hide the login button and show the controls
+	document.getElementById("spark-login").style.display = "none";
+	document.getElementById("controls").style.display = "inline-block";
+	console.log(data);
 
-		// get the user's list of devices
-		spark.listDevices().then(handle_devices, alert);
-	});
+	// get the user's list of devices
+	spark.listDevices().then(handle_devices, alert);
+});
 
-	/*
-	 * This function is called once the login has completed and
-	 * requested the list of devices from the spark.io server.
-	 * It will generate the radio boxes for the available cores,
-	 * marking the first online one by default.
-	 */
-	function handle_devices(devices_arg)
+/*
+ * This function is called once the login has completed and
+ * requested the list of devices from the spark.io server.
+ * It will generate the radio boxes for the available cores,
+ * marking the first online one by default.
+ */
+function handle_devices(devices_arg)
+{
+	devices = devices_arg;
+	console.log(devices);
+	var div = document.getElementById("devices");
+	for (i in devices)
 	{
-		devices = devices_arg;
-		console.log(devices);
-		var div = document.getElementById("devices");
-		for (i in devices)
+		var d = devices[i];
+		var sel = document.createElement('input');
+		var lab = document.createElement('label');
+		sel.setAttribute('type', 'radio');
+		sel.setAttribute('name', 'device');
+		lab.setAttribute('for', d.id + '');
+		lab.innerHTML = d.name + (d.connected ? "" : " (Offline)") + "<br/>";
+
+		lab.onclick = sel.onclick = function() { device = d };
+		if (!device && d.connected)
 		{
-			var d = devices[i];
-			var sel = document.createElement('input');
-			var lab = document.createElement('label');
-			sel.setAttribute('type', 'radio');
-			sel.setAttribute('name', 'device');
-			lab.setAttribute('for', d.id + '');
-			lab.innerHTML = d.name + (d.connected ? "" : "(Offline)");
-
-			lab.onclick = sel.onclick = function() { device = d };
-			if (!device && d.connected)
-			{
-				device = d;
-				sel.checked = true;
-			}
-
-			div.appendChild(sel);
-			div.appendChild(lab);
+			device = d;
+			sel.checked = true;
 		}
+
+		div.appendChild(sel);
+		div.appendChild(lab);
 	}
+}
 
-	/*
-	 * Update the displayed LED state on the web page. This is called
-	 * periodically by the setInterval() callback as well as when ever
-	 * the on/off button callback returns.
-	 */
-	function update_led_state(val)
-	{
-		var html = document.getElementById("led_state");
-		if (val == 0)
-			html.innerHTML = "OFF";
-		else
-		if (val == 1)
-			html.innerHTML = "ON";
-		else
-			html.innerHTML = "???";
-	}
+/*
+ * Update the displayed LED state on the web page. This is called
+ * periodically by the setInterval() callback as well as when ever
+ * the on/off button callback returns.
+ */
+function update_led_state(val)
+{
+	var html = document.getElementById("led_state");
+	if (val == 0)
+		html.innerHTML = "OFF";
+	else
+	if (val == 1)
+		html.innerHTML = "ON";
+	else
+		html.innerHTML = "???";
+}
 
-	/*
-	 * This function is called by the buttons when they are clicked.
-	 * If the button is pushed before the device global is assigned,
-	 * nothing will happen.
-	 */
-	function set_led(value)
-	{
-		if (!device)
-			return;
+/*
+ * This function is called by the buttons when they are clicked.
+ * If the button is pushed before the device global is assigned,
+ * nothing will happen.
+ */
+function set_led(value)
+{
+	if (!device)
+		return;
 
-		device.callFunction("set_led", value, function(err,data) {
-			if (err) return alert(err);
-			console.log("SUCCESS: ", data);
-			update_led_state(data.return_value);
-		});
-	}
+	device.callFunction("set_led", value, function(err,data) {
+		if (err) return alert(err);
+		console.log("SUCCESS: ", data);
+		update_led_state(data.return_value);
+	});
+}
 
-	/*
-	 * Start a timer every 1 second to check the state of the LED,
-	 * but only if there is a currently selected device.
-	 */
-	var interval = setInterval(function() {
-		if (!device)
-			return;
+/*
+ * Start a timer every 1 second to check the state of the LED,
+ * but only if there is a currently selected device.
+ */
+var interval = setInterval(function() {
+	if (!device)
+		return;
 
-		device.getVariable('led_state', function(err,data) {
-			if (err) return alert(err);
+	device.getVariable('led_state', function(err,data) {
+		if (err) return alert(err);
 
-			update_led_state(data.result);
-		});
-	}, 1000);
+		update_led_state(data.result);
+	});
+}, 1000);
 </script>
 
 </body>
