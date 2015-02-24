@@ -1,0 +1,99 @@
+<html>
+<head>
+<title>Spark Time Demo</title>
+<script
+	type="text/javascript"
+	src="https://cdn.jsdelivr.net/sparkjs/0.2.6/spark.min.js"
+>
+</script>
+</head>
+<body>
+
+<!-- This div will hold the login widget -->
+<div id="spark-login"></div>
+
+<div id="controls" style="display:none;">
+Devices:
+<form>
+	<div id="devices"></div>
+</form>
+
+LED: <span id="led" >???</span>
+<button onclick="javascript:set_led(1)">On</button>
+<button onclick="javascript:set_led(0)">Off</button>
+</div>
+
+<script>
+	function show(id, s)
+	{
+		var e = document.getElementById(id);
+		if (e)
+			e.style.display = s ? "inline-block" : "none";
+		else
+			console.log("element not found: ", id);
+	}
+
+	function error(s)
+	{
+		console.log("ERROR: ", s);
+	}
+		
+	var s;
+	var devices;
+	var device;
+
+	// Call sparkLogin function with a callback function
+	// that will be called on successful login:
+	sparkLogin(function(data) {
+		// hide the login button
+		show("spark-login", 0);
+		show("controls", 1);
+		console.log(data);
+
+		// get the user's list of devices
+		spark.listDevices().then(handle_devices, error);
+	});
+
+	function handle_devices(devices_arg)
+	{
+		devices = devices_arg;
+		console.log(devices);
+		var div = document.getElementById("devices");
+		for (i in devices)
+		{
+			var d = devices[i];
+			var sel = document.createElement('input');
+			var lab = document.createElement('label');
+			sel.setAttribute('type', 'radio');
+			sel.setAttribute('name', 'device');
+			lab.setAttribute('for', d.id + '');
+			lab.innerHTML = d.name + (d.connected ? "" : "(Offline)");
+
+			lab.onclick = sel.onclick = function() { device = d };
+			if (!device && d.connected)
+			{
+				device = d;
+				sel.checked = true;
+			}
+
+			div.appendChild(sel);
+			div.appendChild(lab);
+		}
+	}
+
+	function set_led(value)
+	{
+		if (!device)
+			return;
+		device.callFunction("write", value, function(err,data) {
+			if (err) {
+				return error(err);
+			}
+
+			console.log("SUCCESS: ", data);
+		});
+	}
+</script>
+
+</body>
+</html>

@@ -1,5 +1,10 @@
-Useful commands
+Example programs
 ===
+You can either paste the source code for these programs into the web IDE
+at [spark.io](https://spark.io/) or you can use the
+[command line utilities](http://docs.spark.io/cli/).  The command line
+has the advantage of allowing you to keep your source code under git or hg
+so that you can track questions.
 
 
 Demo 1
@@ -55,6 +60,18 @@ You can read the value of the variable by doing an HTTP `GET`, passing
 in the access token as a query parameter.
 
     curl "https://api.spark.io/v1/devices/$DEVICE_ID/read?access_token=$ACCESS_TOKEN"
+
+
+Demo 3
+---
+This one is not a new program to flash, but a Javascript program to run
+in your browser that will talk to the core.  It uses the
+[Spark Javascript API](http://docs.spark.io/javascript/) and will require
+you to login to get the access token.
+
+If you have multiple devices, they will be listed and you can select
+which one to toggle the LED on.  If you use `curl` or some other method
+to toggle the LED, it should update live on the web page.
 
 
 Demo 4
