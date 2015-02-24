@@ -26,10 +26,10 @@ Also has a variable to allow a remote read of the LED state. Flash it:
 And then use the command line utility to turn the LED on, to check
 the state, turn it off, as well as see how it handles invalid input:
 
-    spark call CORE_NAME write 1
-    spark get CORE_NAME read
-    spark call CORE_NAME write 0
-    spark call CORE_NAME write blah
+    spark call CORE_NAME set_led 1
+    spark get CORE_NAME led_state
+    spark call CORE_NAME set_led 0
+    spark call CORE_NAME set_led blah
 
 You can also use curl to do this query, although you will need two pieces
 of information: your private access token and your core ID.
@@ -48,18 +48,18 @@ doing an HTTP `POST` with the access token and argument as form elements:
 
     DEVICE_ID=(paste the hex device id token...)
     ACCESS_TOKEN=(paste the hex access token...)
-    curl "https://api.spark.io/v1/devices/$DEVICE_ID/write" \
+    curl "https://api.spark.io/v1/devices/$DEVICE_ID/set_led" \
 	-d access_token=$ACCESS_TOKEN \
 	-d args="1"
 
-    curl "https://api.spark.io/v1/devices/$DEVICE_ID/write" \
+    curl "https://api.spark.io/v1/devices/$DEVICE_ID/set_led" \
 	-d access_token=$ACCESS_TOKEN \
 	-d args="0"
 
 You can read the value of the variable by doing an HTTP `GET`, passing
 in the access token as a query parameter.
 
-    curl "https://api.spark.io/v1/devices/$DEVICE_ID/read?access_token=$ACCESS_TOKEN"
+    curl "https://api.spark.io/v1/devices/$DEVICE_ID/led_state?access_token=$ACCESS_TOKEN"
 
 
 Demo 3

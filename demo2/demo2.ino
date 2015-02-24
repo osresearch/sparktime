@@ -8,7 +8,7 @@ static const int LED = D7;
 static int led_state = 0;
 
 static int
-write_led(
+set_led(
 	String command
 )
 {
@@ -30,12 +30,14 @@ write_led(
 void setup()
 {
 	pinMode(LED, OUTPUT);
-	Spark.variable("read", &led_state, INT);
-	Spark.function("write", write_led);
+	Spark.variable("led_state", &led_state, INT);
+	Spark.function("set_led", set_led);
 }
 
 
 void loop()
 {
+	// each time through the loop, get the current
+	// state of the LED (on or off)
 	led_state = digitalRead(LED);
 }

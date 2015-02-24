@@ -18,28 +18,16 @@ Devices:
 	<div id="devices"></div>
 </form>
 
-LED: <span id="led" >???</span>
+LED: <span id="led_state" >???</span>
 <button onclick="javascript:set_led(1)">On</button>
 <button onclick="javascript:set_led(0)">Off</button>
 </div>
 
 <script>
-	function show(id, s)
-	{
-		var e = document.getElementById(id);
-		if (e)
-			e.style.display = s ? "inline-block" : "none";
-		else
-			console.log("element not found: ", id);
-	}
-
-	function error(s)
-	{
-		console.log("ERROR: ", s);
-	}
-		
-	var s;
-	var devices;
+	/*
+	 * Once the list of devices has been fetched, one will be
+	 * selected and stored in this global.
+	 */
 	var device;
 
 	/*
@@ -50,13 +38,13 @@ LED: <span id="led" >???</span>
 	 * list of devices will then be made.
 	 */
 	sparkLogin(function(data) {
-		// hide the login button
-		show("spark-login", 0);
-		show("controls", 1);
+		// hide the login button and show the controls
+		document.getElementById("spark-login").style.display = "none";
+		document.getElementById("controls").style.display = "inline-block";
 		console.log(data);
 
 		// get the user's list of devices
-		spark.listDevices().then(handle_devices, error);
+		spark.listDevices().then(handle_devices, alert);
 	});
 
 	/*
@@ -93,6 +81,23 @@ LED: <span id="led" >???</span>
 	}
 
 	/*
+	 * Update the displayed LED state on the web page. This is called
+	 * periodically by the setInterval() callback as well as when ever
+	 * the on/off button callback returns.
+	 */
+	function update_led_state(val)
+	{
+		var html = document.getElementById("led_state");
+		if (val == 0)
+			html.innerHTML = "OFF";
+		else
+		if (val == 1)
+			html.innerHTML = "ON";
+		else
+			html.innerHTML = "???";
+	}
+
+	/*
 	 * This function is called by the buttons when they are clicked.
 	 * If the button is pushed before the device global is assigned,
 	 * nothing will happen.
@@ -101,27 +106,26 @@ LED: <span id="led" >???</span>
 	{
 		if (!device)
 			return;
-		device.callFunction("write", value, function(err,data) {
-			if (err) {
-				return error(err);
-			}
 
+		device.callFunction("set_led", value, function(err,data) {
+			if (err) return alert(err);
 			console.log("SUCCESS: ", data);
+			update_led_state(data.return_value);
 		});
 	}
 
 	/*
-	 * Start a timer every 1 second to check the state of the LED.
+	 * Start a timer every 1 second to check the state of the LED,
+	 * but only if there is a currently selected device.
 	 */
 	var interval = setInterval(function() {
 		if (!device)
 			return;
-		device.getVariable('read', function(err,data) {
-			if (err) {
-				return error(err);
-			}
-			//console.log(data);
-			document.getElementById("led").innerHTML = data.result;
+
+		device.getVariable('led_state', function(err,data) {
+			if (err) return alert(err);
+
+			update_led_state(data.result);
 		});
 	}, 1000);
 </script>
