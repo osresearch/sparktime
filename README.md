@@ -5,13 +5,19 @@ After the workshop, students will be able to:
 
 * Connect a SparkCore to their wifi and claim it on the spark.io website.
 * Write a program in the spark.io IDE and flash their cores.
-* Use curl to flash the onboard LED.
+* Use curl from the command line to control the onboard LED.
 * Use Javascript to login to the spark servers and track an access token cookie
-* Drive external LEDs and RGB LEDs
-* Read from buttons
-* Read from knobs
-* Control 
-
+* Call a function on the sparkcore from the outside
+* Input:
+  * Read from buttons
+  * Read from knobs
+* Output:
+  * Drive external LEDs and RGB LEDs
+  * Control servos 
+* Time/clocks
+  * Sync time with server
+  * Schedule alarms
+* Audio (demo rather than worked example)
 
 Example programs
 ===
