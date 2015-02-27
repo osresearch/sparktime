@@ -1,3 +1,18 @@
+Goals
+===
+
+After the workshop, students will be able to:
+
+* Connect a SparkCore to their wifi and claim it on the spark.io website.
+* Write a program in the spark.io IDE and flash their cores.
+* Use curl to flash the onboard LED.
+* Use Javascript to login to the spark servers and track an access token cookie
+* Drive external LEDs and RGB LEDs
+* Read from buttons
+* Read from knobs
+* Control 
+
+
 Example programs
 ===
 You can either paste the source code for these programs into the web IDE
@@ -76,6 +91,13 @@ to toggle the LED, it should update live on the web page.
 
 Demo 4
 ---
-Tracks the current time.  Allows you to query it and set an alarm.
-When the time matches, the blue LED will turn on.
+Tracks the current time and reads an analog value from a knob connected
+to A0.  The javascript interface also demonstrates using cookies to store
+the login information so that you don't need to keep putting in your
+spark.io details.
+
+
+Demo 5
+---
+
 
