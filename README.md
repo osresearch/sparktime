@@ -1,3 +1,8 @@
+ToDo
+===
+
+Look up python simple server.
+
 Goals
 ===
 
@@ -18,6 +23,20 @@ After the workshop, students will be able to:
   * Sync time with server
   * Schedule alarms
 * Audio (demo rather than worked example)
+
+Curriculum
+===
+
+1) Connect core and flash with code to make the onboard LED blink. (using online IDE)
+	* uses cut-and-paste code for HI and LOW
+	* talk about IO pins (set pin to IO mode, etc)
+2) Go over network diagram for the parts of the system.  Discuss access token and core ID, and show how to get them.
+3) Use curl to call a function on the core to change the color of the onboard LED.
+	* show how this works via function in code downloaded in 1
+4) Pull up breadboard and attach a switch, doing remedial breadboard explanation as necessary.
+5) Use curl to read the state of the switch. (done with curl)
+6) Now we begin writing code in the IDE and javascript (IDE work can be done outside of the IDE, and we will show those interested how to do so after class.)
+7) 
 
 Example programs
 ===
