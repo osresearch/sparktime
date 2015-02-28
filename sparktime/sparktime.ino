@@ -28,7 +28,7 @@ void setup()
 // configure the column output, but select the no-decoder
 void col_output(uint8_t col)
 {
-	col %= 5;
+	col %= 8;
 	digitalWrite(A3, 1);
 	digitalWrite(A4, 1);
     
@@ -41,7 +41,7 @@ void col_enable(uint8_t col)
 {
 	static const uint8_t sel[] = { 1, 2, 0 };
 
-	col = sel[col / 5];
+	col = sel[col / 8];
     
 	digitalWrite(A3, col & 1);
 	digitalWrite(A4, col & 2);
@@ -49,19 +49,19 @@ void col_enable(uint8_t col)
 
 void draw()
 {
-	for(uint8_t col=0 ; col < WIDTH ; col++)
+	for(uint8_t col=0 ; col <= WIDTH ; col++)
 	{
 		col_output(col);
 		const uint8_t * const b = fb[col];
-		digitalWrite(D0, 1); //b[0]);
-		digitalWrite(D1, 1); //b[1]);
-		digitalWrite(D2, 1); //b[2]);
-		digitalWrite(D3, 1); //b[3]);
-		digitalWrite(D4, 1); //b[4]);
-		digitalWrite(D5, 1); //b[5]);
-		digitalWrite(D6, 1); //b[6]);
+		digitalWrite(D0, b[0]);
+		digitalWrite(D1, b[1]);
+		digitalWrite(D2, b[2]);
+		digitalWrite(D3, b[3]);
+		digitalWrite(D4, b[4]);
+		digitalWrite(D5, b[5]);
+		digitalWrite(D6, b[6]);
 		col_enable(col);
-		delay(100);
+		delayMicroseconds(200);
 	}
 
 	col_enable(WIDTH+1);
