@@ -64,7 +64,7 @@ d5	a15	col c
 	| (1 << 1) \
 	)
 
-uint8_t fb[WIDTH][HEIGHT];
+static uint8_t fb[WIDTH][HEIGHT];
 
 // STM pins mapping has the GPIO structures
 extern STM32_Pin_Info PIN_MAP[];
@@ -196,7 +196,7 @@ ledmatrix_draw()
 				| (b[6] > bright) << 7
 				;
 			row_output(bits);
-			delayMicroseconds(8);
+			//delayMicroseconds(8);
 		}
 
 		col_disable();

@@ -34,5 +34,8 @@ void loop()
 		min % 10
 	);
 
-	ledmatrix_draw();
+	for (int i = 0 ; i < 10 ; i++)
+	{
+		ledmatrix_draw();
+	}
 }
