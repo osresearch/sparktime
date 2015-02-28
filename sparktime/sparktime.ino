@@ -21,8 +21,11 @@ void loop()
 		return;
 	}
 
-	const uint8_t hour = Time.hour();
-	const uint8_t min = Time.second(); //Time.min();
+	uint8_t hour = Time.hour();
+	const uint8_t min = Time.minute();
+
+	// Time zone update for eastern time
+	hour = (hour - 5) % 24;
 
 	draw_time(
 		hour / 10,
