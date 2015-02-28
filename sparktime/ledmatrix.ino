@@ -40,11 +40,30 @@ d5	a15	col c
 #define SEL0	A0	// gpio a0, pin 25
 #define SEL1	A1	// gpio a1, pin 26
 
+
+#define ROW_MASK	(0 \
+	| (1<<0) \
+	| (1<<1) \
+	| (1<<3) \
+	| (1<<4) \
+	| (1<<5) \
+	| (1<<6) \
+	| (1<<7) \
+	)
+
 uint8_t fb[WIDTH][HEIGHT];
+
+// STM pins mapping has the GPIO structures
+extern STM32_Pin_Info PIN_MAP[];
+static GPIO_TypeDef * gpio_a;
+static GPIO_TypeDef * gpio_b;
 
 void
 ledmatrix_setup()
 {
+	gpio_a = PIN_MAP[A0].gpio_peripheral;
+	gpio_b = PIN_MAP[D0].gpio_peripheral;
+
 	pinMode(COL0, OUTPUT); // col b0
 	pinMode(COL1, OUTPUT); // col b1
 	pinMode(COL2, OUTPUT); // col b2
@@ -71,7 +90,6 @@ fast_write(
 	const uint8_t value
 )
 {
-	extern STM32_Pin_Info PIN_MAP[];
 	const STM32_Pin_Info * const p = &PIN_MAP[pin];
 
 	if (value == LOW)
@@ -92,18 +110,26 @@ col_disable(void)
 	fast_write(SEL1, 1);
 }
 
+static void
+row_output(
+	const uint16_t bits
+)
+{
+	uint32_t one_bits = bits & ROW_MASK;
+	uint32_t zero_bits = (~bits) & ROW_MASK;
+
+	// BSRR has both set and reset functionality, with the bottom
+	// 16-bits for set, and the top 16-bits for clear.
+	gpio_b->BSRR = one_bits | (zero_bits << 16);
+}
+	
+
 
 // configure the column output, but select the no-decoder
 static void col_output(uint8_t col)
 {
 	// clear all the outputs
-	fast_write(ROW0, 0);
-	fast_write(ROW1, 0);
-	fast_write(ROW2, 0);
-	fast_write(ROW3, 0);
-	fast_write(ROW4, 0);
-	fast_write(ROW5, 0);
-	fast_write(ROW6, 0);
+	row_output(0);
 
 	// select the correct column
 	const uint8_t col_rank = col % 8;
@@ -133,13 +159,17 @@ ledmatrix_draw()
 		const uint8_t * const b = fb[col];
 		for (uint8_t bright = 1 ; bright < 240 ; bright += 8)
 		{
-			fast_write(ROW0, b[0] > bright);
-			fast_write(ROW1, b[1] > bright);
-			fast_write(ROW2, b[2] > bright);
-			fast_write(ROW3, b[3] > bright);
-			fast_write(ROW4, b[4] > bright);
-			fast_write(ROW5, b[5] > bright);
-			fast_write(ROW6, b[6] > bright);
+			uint16_t bits = 0
+				| (b[0] > bright) << 0
+				| (b[1] > bright) << 1
+				| (b[2] > bright) << 3
+				| (b[3] > bright) << 4
+				| (b[4] > bright) << 5
+				| (b[5] > bright) << 6
+				| (b[6] > bright) << 7
+				;
+			row_output(bits);
+			delayMicroseconds(8);
 		}
 
 		col_disable();
