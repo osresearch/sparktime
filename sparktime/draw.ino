@@ -79,7 +79,7 @@ draw_time(
 
 	// the slowly flashing " : "
 	static uint16_t bright = 0;
-	uint8_t b = bright++ / 8;
+	uint8_t b = bright++ / 1;
 	if (b >= 128)
 		b = 0xFF - b;
 	ledmatrix_set(10, 2, 2*b);

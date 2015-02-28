@@ -26,27 +26,63 @@ ledmatrix_setup()
 }
 
 
-// configure the column output, but select the no-decoder
-static void col_output(uint8_t col)
+/** Faster output to an IO pin.
+ * We've already verified that things are configured;
+ * just write directly to the mapped pin's gpio line.
+ */
+static void
+fast_write(
+	const uint16_t pin,
+	const uint8_t value
+)
 {
-	col %= 8;
-	digitalWrite(A3, 1);
-	digitalWrite(A4, 1);
-    
-	digitalWrite(A0, col & 1);
-	digitalWrite(A1, col & 2);
-	digitalWrite(A2, col & 4);
+	extern STM32_Pin_Info PIN_MAP[];
+	const STM32_Pin_Info * const p = &PIN_MAP[pin];
+
+	if (value == LOW)
+	{
+		p->gpio_peripheral->BRR = p->gpio_pin;
+	} else
+	{
+		p->gpio_peripheral->BSRR = p->gpio_pin;
+	}
 }
 
 
-static void col_enable(uint8_t col)
+// disable the output
+static void
+col_disable(void)
 {
+	fast_write(A3, 1);
+	fast_write(A4, 1);
+}
+
+
+// configure the column output, but select the no-decoder
+static void col_output(uint8_t col)
+{
+	// clear all the outputs
+	fast_write(D0, 0);
+	fast_write(D1, 0);
+	fast_write(D2, 0);
+	fast_write(D3, 0);
+	fast_write(D4, 0);
+	fast_write(D5, 0);
+	fast_write(D6, 0);
+
+	// select the correct column
+	const uint8_t col_rank = col % 8;
+	fast_write(A0, col_rank & 1);
+	fast_write(A1, col_rank & 2);
+	fast_write(A2, col_rank & 4);
+
+	// select the correct output bank
 	static const uint8_t sel[] = { 1, 2, 0 };
 
-	col = sel[col / 8];
+	const uint8_t bank = sel[col / 8];
     
-	digitalWrite(A3, col & 1);
-	digitalWrite(A4, col & 2);
+	fast_write(A3, bank & 1);
+	fast_write(A4, bank & 2);
 }
 
 
@@ -56,22 +92,24 @@ static void col_enable(uint8_t col)
 void
 ledmatrix_draw()
 {
-	for(uint8_t col=0 ; col <= WIDTH ; col++)
+	for(uint8_t col=0 ; col < WIDTH ; col++)
 	{
 		col_output(col);
 		const uint8_t * const b = fb[col];
-		digitalWrite(D0, b[0]);
-		digitalWrite(D1, b[1]);
-		digitalWrite(D2, b[2]);
-		digitalWrite(D3, b[3]);
-		digitalWrite(D4, b[4]);
-		digitalWrite(D5, b[5]);
-		digitalWrite(D6, b[6]);
-		col_enable(col);
-		delayMicroseconds(200);
+		for (uint8_t bright = 1 ; bright < 240 ; bright += 8)
+		{
+			fast_write(D0, b[0] > bright);
+			fast_write(D1, b[1] > bright);
+			fast_write(D2, b[2] > bright);
+			fast_write(D3, b[3] > bright);
+			fast_write(D4, b[4] > bright);
+			fast_write(D5, b[5] > bright);
+			fast_write(D6, b[6] > bright);
+		}
+
+		col_disable();
 	}
 
-	col_enable(WIDTH+1);
 }
 
 
