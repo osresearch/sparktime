@@ -39,4 +39,15 @@ draw_string(
 	const char outText[]
 );
 
+extern void
+draw_time(
+	uint8_t dig1,
+	uint8_t dig2,
+	uint8_t dig3,
+	uint8_t dig4
+);
+
+extern void
+draw_clear();
+
 #endif

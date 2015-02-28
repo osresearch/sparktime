@@ -1,12 +1,35 @@
 #include "sparktime.h"
-#
+#define ONE_DAY_MILLIS (24*60*60*1000)
+
+
 void setup()
 {
 	ledmatrix_setup();
-	draw_string("HELO");
+	draw_clear();
 }
+
 
 void loop()
 {
+	static uint32_t last_sync;
+	const uint32_t now_millis = millis();
+
+	if (now_millis - last_sync > ONE_DAY_MILLIS)
+	{
+		Spark.syncTime();
+		last_sync = millis();
+		return;
+	}
+
+	const uint8_t hour = Time.hour();
+	const uint8_t min = Time.second(); //Time.min();
+
+	draw_time(
+		hour / 10,
+		hour % 10,
+		min / 10,
+		min % 10
+	);
+
 	ledmatrix_draw();
 }

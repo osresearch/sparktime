@@ -7,8 +7,8 @@ draw_char(
 )
 {
 	for (uint8_t y=0 ; y<5 ; y++)
-		ledmatrix_set_col(col++, LETTERS[c - ASCII_OFFSET][y], 0xFF); 
-} 
+		ledmatrix_set_col(col++, LETTERS[c - ASCII_OFFSET][y], 0xFF);
+}
 
 
 /*
@@ -39,14 +39,14 @@ draw_small_digit(
 			0xFF //blinkON && blinking ? 0 : 0xFF
 		);
 	}
-}    
+}
 
 
 /*
  * Clear LED Matrix
  */
 void
-clearmatrix()
+draw_clear()
 {
 	for (int i=0 ; i<WIDTH ; i++)
 		ledmatrix_set_col(i, 0, 0);
@@ -57,19 +57,19 @@ clearmatrix()
 /**
  * Display the four digit time with small characters.
  *
- * 
+ *
  * Fills diplay with formated time
  * Depending on postion of "1"s spacing is adjusted beween it and next digit
  * Blinks if it settng mode
  * displays AM/PM dot and Alarm on dot
  */
 void
-writeTime(
+draw_time(
 	uint8_t dig1,
 	uint8_t dig2,
 	uint8_t dig3,
 	uint8_t dig4
-)         
+)
 {
 	const int blinkHour = 0;
 	const int blinkMin = 0;
@@ -94,11 +94,11 @@ writeTime(
 	// Alarm dot (top left) Do not display while setting alarm
 	if (ALARMON && (STATE == 1))
 		bitSet(AMPMALARMDOTS,6);
-  
+
 	// AM / PM dot (bottom left) (Display or Set Time)
 	if(PM_NotAM_flag && (STATE == 1 || STATE == 2) && TH_Not24_flag)
 		bitSet(AMPMALARMDOTS,0);
-  
+
 	// AM / PM dot (bottom left) (Set Alarm Time)
 	if(A_PM_NotAM_flag && (STATE == 3) && TH_Not24_flag)
 		bitSet(AMPMALARMDOTS,0);
