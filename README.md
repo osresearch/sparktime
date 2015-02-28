@@ -1,3 +1,43 @@
+ToDo
+===
+
+Look up python simple server.
+
+Goals
+===
+
+After the workshop, students will be able to:
+
+* Connect a SparkCore to their wifi and claim it on the spark.io website.
+* Write a program in the spark.io IDE and flash their cores.
+* Use curl from the command line to control the onboard LED.
+* Use Javascript to login to the spark servers and track an access token cookie
+* Call a function on the sparkcore from the outside
+* Input:
+  * Read from buttons
+  * Read from knobs
+* Output:
+  * Drive external LEDs and RGB LEDs
+  * Control servos 
+* Time/clocks
+  * Sync time with server
+  * Schedule alarms
+* Audio (demo rather than worked example)
+
+Curriculum
+===
+
+1) Connect core and flash with code to make the onboard LED blink. (using online IDE)
+	* uses cut-and-paste code for HI and LOW
+	* talk about IO pins (set pin to IO mode, etc)
+2) Go over network diagram for the parts of the system.  Discuss access token and core ID, and show how to get them.
+3) Use curl to call a function on the core to change the color of the onboard LED.
+	* show how this works via function in code downloaded in 1
+4) Pull up breadboard and attach a switch, doing remedial breadboard explanation as necessary.
+5) Use curl to read the state of the switch. (done with curl)
+6) Now we begin writing code in the IDE and javascript (IDE work can be done outside of the IDE, and we will show those interested how to do so after class.)
+7) 
+
 Example programs
 ===
 You can either paste the source code for these programs into the web IDE
@@ -76,6 +116,13 @@ to toggle the LED, it should update live on the web page.
 
 Demo 4
 ---
-Tracks the current time.  Allows you to query it and set an alarm.
-When the time matches, the blue LED will turn on.
+Tracks the current time and reads an analog value from a knob connected
+to A0.  The javascript interface also demonstrates using cookies to store
+the login information so that you don't need to keep putting in your
+spark.io details.
+
+
+Demo 5
+---
+
 

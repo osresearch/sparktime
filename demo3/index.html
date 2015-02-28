@@ -118,7 +118,7 @@ function set_led(value)
  * Start a timer every 1 second to check the state of the LED,
  * but only if there is a currently selected device.
  */
-var interval = setInterval(function() {
+setInterval(function() {
 	if (!device)
 		return;
 
