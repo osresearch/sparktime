@@ -121,8 +121,8 @@ row_output(
 	// BSRR has both set and reset functionality, with the bottom
 	// 16-bits for set, and the top 16-bits for clear.
 	gpio_b->BSRR = 0
-		| (one_bits << 16)
-		| (zero_bits << 0)
+		| (one_bits << 0)
+		| (zero_bits << 16)
 		;
 }
 	
