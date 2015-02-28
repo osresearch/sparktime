@@ -51,6 +51,19 @@ d5	a15	col c
 	| (1<<7) \
 	)
 
+#define COL_SHIFT	13
+#define COL_MASK	(0 \
+	| (1 << 13) \
+	| (1 << 14) \
+	| (1 << 15) \
+	)
+
+#define SEL_SHIFT	0
+#define SEL_MASK	(0 \
+	| (1 << 0) \
+	| (1 << 1) \
+	)
+
 uint8_t fb[WIDTH][HEIGHT];
 
 // STM pins mapping has the GPIO structures
@@ -102,30 +115,40 @@ fast_write(
 }
 
 
-// disable the output
 static void
-col_disable(void)
+gpio_set(
+	GPIO_TypeDef * const g,
+	const uint16_t bits,
+	const uint16_t mask
+)
 {
-	fast_write(SEL0, 1);
-	fast_write(SEL1, 1);
+	uint32_t one_bits = bits & mask;
+	uint32_t zero_bits = (~bits) & mask;
+
+	// BSRR has both set and reset functionality, with the bottom
+	// 16-bits for set, and the top 16-bits for clear.
+	g->BSRR = 0
+		| (one_bits << 0)
+		| (zero_bits << 16)
+		;
 }
+
 
 static void
 row_output(
 	const uint16_t bits
 )
 {
-	uint32_t one_bits = bits & ROW_MASK;
-	uint32_t zero_bits = (~bits) & ROW_MASK;
-
-	// BSRR has both set and reset functionality, with the bottom
-	// 16-bits for set, and the top 16-bits for clear.
-	gpio_b->BSRR = 0
-		| (one_bits << 0)
-		| (zero_bits << 16)
-		;
+	gpio_set(gpio_b, bits, ROW_MASK);
 }
 	
+
+// disable the output
+static void
+col_disable(void)
+{
+	gpio_set(gpio_a, 3 << SEL_SHIFT, SEL_MASK);
+}
 
 
 // configure the column output, but select the no-decoder
@@ -134,19 +157,20 @@ static void col_output(uint8_t col)
 	// clear all the outputs
 	row_output(0);
 
-	// select the correct column
-	const uint8_t col_rank = col % 8;
-	fast_write(COL0, col_rank & 1);
-	fast_write(COL1, col_rank & 2);
-	fast_write(COL2, col_rank & 4);
-
 	// select the correct output bank
 	static const uint8_t sel[] = { 1, 2, 0 };
-
 	const uint8_t bank = sel[col / 8];
+
+	// select the correct column
+	const uint8_t col_rank = col % 8;
     
-	fast_write(SEL0, bank & 1);
-	fast_write(SEL1, bank & 2);
+	// write the column and bank selector to the gpio
+	const uint16_t bits = 0
+		| col_rank << COL_SHIFT
+		| bank << SEL_SHIFT
+		;
+
+	gpio_set(gpio_a, bits, COL_MASK | SEL_MASK);
 }
 
 
