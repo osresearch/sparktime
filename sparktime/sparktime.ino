@@ -25,7 +25,7 @@ void loop()
 	const uint8_t min = Time.minute();
 
 	// Time zone update for eastern time
-	hour = (hour - 5) % 24;
+	hour = (hour - 5 + 24) % 24;
 
 	draw_time(
 		hour / 10,
