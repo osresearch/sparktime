@@ -5,7 +5,6 @@
  *
  * pin 7 to vin.
  * pin 8 and 22 to gnd
- */
 spark	gpio	function
 a6	b0	row 0
 a7	b1	row 1
@@ -97,6 +96,7 @@ ledmatrix_setup()
 }
 
 
+#if 0
 /** Faster output to an IO pin.
  * We've already verified that things are configured;
  * just write directly to the mapped pin's gpio line.
@@ -117,6 +117,7 @@ fast_write(
 		p->gpio_peripheral->BSRR = p->gpio_pin;
 	}
 }
+#endif
 
 
 static void
@@ -217,9 +218,9 @@ ledmatrix_set_col(
 	const uint8_t bright
 )
 {
-	uint8_t * const p = fb[col];
+	uint8_t * const p = fb[WIDTH-1-col];
 	for (uint8_t i = 0 ; i < HEIGHT ; i++)
-		p[i] = (bits & (1 << i)) ? bright : 0;
+		p[HEIGHT-1-i] = (bits & (1 << i)) ? bright : 0;
 }
 
 
@@ -230,5 +231,5 @@ ledmatrix_set(
 	const uint8_t bright
 )
 {
-	fb[col][row] = bright;
+	fb[WIDTH-1-col][HEIGHT-1-row] = bright;
 }
