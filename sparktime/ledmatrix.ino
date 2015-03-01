@@ -2,6 +2,10 @@
  * Interface a sparkcore with the SolderTime Desk Clock
  * Pin diagram is at:
  * https://github.com/spark/firmware/blob/master/src/spark_wiring.cpp#L46
+ *
+ * pin 7 to vin.
+ * pin 8 and 22 to gnd
+ */
 spark	gpio	function
 a6	b0	row 0
 a7	b1	row 1
