@@ -152,6 +152,7 @@ row_output(
 static void
 col_disable(void)
 {
+	row_output(0);
 	gpio_set(gpio_a, 3 << SEL_SHIFT, SEL_MASK);
 }
 
