@@ -129,7 +129,12 @@ var interval = setInterval(function() {
 	device.getVariable('alarm', function(err,data) {
 		if (err) return alert(err);
 
-		var t = new Date(data.result*1000);
+		var t = "NONE";
+		if (data.result != 0)
+		{
+			t = new Date(data.result*1000);
+		}
+
 		document.getElementById("alarm").innerHTML = t;
 	});
 }, 1000);
