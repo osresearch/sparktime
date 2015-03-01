@@ -24,16 +24,43 @@ static int buzz(String s)
 static int unix_time;
 static int alarm_time;
 
+static void
+eeprom_write_32(
+	unsigned offset,
+	uint32_t x
+)
+{
+	EEPROM.write(offset+0, x >> 24);
+	EEPROM.write(offset+1, x >> 16);
+	EEPROM.write(offset+2, x >>  8);
+	EEPROM.write(offset+3, x >>  0);
+}
+
+static uint32_t
+eeprom_read_32(
+	unsigned offset
+)
+{
+	uint32_t b0 = EEPROM.read(offset+0);
+	uint32_t b1 = EEPROM.read(offset+1);
+	uint32_t b2 = EEPROM.read(offset+2);
+	uint32_t b3 = EEPROM.read(offset+3);
+
+	return 0
+		| b0 << 24
+		| b1 << 16
+		| b2 <<  8
+		| b2 <<  0;
+}
+
+	
 static int
 alarm_write(
-	int when
+	uint32_t when
 )
 {
 	alarm_time = when;
-	EEPROM.write(0, alarm_time >> 24);
-	EEPROM.write(1, alarm_time >> 16);
-	EEPROM.write(2, alarm_time >>  8);
-	EEPROM.write(3, alarm_time >>  0);
+	eeprom_write_32(0, when);
 
 	return alarm_time;
 }
@@ -41,12 +68,8 @@ alarm_write(
 
 static void alarm_read()
 {
-	alarm_time = 0
-		| EEPROM.read(0) << 24
-		| EEPROM.read(1) << 24
-		| EEPROM.read(2) << 24
-		| EEPROM.read(3) << 24
-		;
+	
+	alarm_time = eeprom_read_32(0);
 
 	// check if this alarm has already happened.
 	unix_time = Time.now();
@@ -57,15 +80,15 @@ static void alarm_read()
 
 static int alarm_set(String s)
 {
+	// times that start with "+" are seconds relative to now.
 	if (s.charAt(0) == '+')
 	{
-		// relative to now.
 		const uint32_t delta = s.toInt();
 		return alarm_write(unix_time + delta);
 	}
 
 	// absolute unix time; make sure only ints
-	for (int i = 0 ; i < s.length() ; i++)
+	for (unsigned i = 0 ; i < s.length() ; i++)
 	{
 		const char c = s.charAt(i);
 		if (c < '0' || c < '9')
