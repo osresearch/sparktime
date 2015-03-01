@@ -49,8 +49,10 @@ so that you can track questions.
 
 Demo 1
 ---
-Just flashes the blue LED on the board at 1 Hz.  Find out your core name
-with the `list` command and then call the flash command on that name:
+Just flashes the blue LED on the board at 1 Hz.  You can do this
+through the IDE, or on the command line.  For the command line,
+find out your core name with the `list` command and then call the
+`flash` command on that name:
 
     spark list
     spark flash CORE_NAME demo1
@@ -58,18 +60,20 @@ with the `list` command and then call the flash command on that name:
 
 Demo 2
 ---
-Exposes a function to allow a remote process to turn the LED on or off.
-Also has a variable to allow a remote read of the LED state. Flash it:
+Exposes a function to allow a remote process (for instance `curl`
+on the command line or javascript in a webpage) to turn the LED on
+or off.  Also has a variable to allow a remote read of the LED
+state. Flash it via the IDE or the command line with:
 
-    spark flash CORE_NAME demo1
+    > spark flash CORE_NAME demo1
 
 And then use the command line utility to turn the LED on, to check
 the state, turn it off, as well as see how it handles invalid input:
 
-    spark call CORE_NAME set_led 1
-    spark get CORE_NAME led_state
-    spark call CORE_NAME set_led 0
-    spark call CORE_NAME set_led blah
+    > spark call CORE_NAME set_led 1
+    > spark get CORE_NAME led_state
+    > spark call CORE_NAME set_led 0
+    > spark call CORE_NAME set_led blah
 
 You can also use curl to do this query, although you will need two pieces
 of information: your private access token and your core ID.
@@ -84,22 +88,25 @@ For the device id, select the Cores icon (looks like a target reticle)
 and then click the dropdown next to the core name to get the id.
 
 With these two pieces of info, you can use `curl` to turn on the LED by
-doing an HTTP `POST` with the access token and argument as form elements:
+doing an HTTP `POST` with the access token and argument as form
+elements.  The `-d` or `--data` argument sends the specified data
+in a POST request to the http server.
 
-    DEVICE_ID=(paste the hex device id token...)
-    ACCESS_TOKEN=(paste the hex access token...)
-    curl "https://api.spark.io/v1/devices/$DEVICE_ID/set_led" \
+    > DEVICE_ID=(paste the hex device id token...)
+    > ACCESS_TOKEN=(paste the hex access token...)
+    > curl "https://api.spark.io/v1/devices/$DEVICE_ID/set_led" \
 	-d access_token=$ACCESS_TOKEN \
 	-d args="1"
 
-    curl "https://api.spark.io/v1/devices/$DEVICE_ID/set_led" \
+    > curl "https://api.spark.io/v1/devices/$DEVICE_ID/set_led" \
 	-d access_token=$ACCESS_TOKEN \
 	-d args="0"
 
 You can read the value of the variable by doing an HTTP `GET`, passing
-in the access token as a query parameter.
+in the access token as a query parameter.  `curl` does `GET` by
+default:
 
-    curl "https://api.spark.io/v1/devices/$DEVICE_ID/led_state?access_token=$ACCESS_TOKEN"
+    > curl "https://api.spark.io/v1/devices/$DEVICE_ID/led_state?access_token=$ACCESS_TOKEN"
 
 
 Demo 3

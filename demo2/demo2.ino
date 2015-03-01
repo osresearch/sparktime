@@ -7,6 +7,7 @@
 static const int LED = D7;
 static int led_state = 0;
 
+// set_led() both sets the LED, and returns what it has been set to.
 static int
 set_led(
 	String command
@@ -14,6 +15,8 @@ set_led(
 {
 	if (command == "0")
 	{
+		// digitalWrite() and digitalRead() are defined in the 
+		// SparkCore docs on their site
 		digitalWrite(LED, 0);
 		return 0;
 	} else
@@ -27,6 +30,13 @@ set_led(
 }
 
 
+/*
+ * Variables and functions can be "exposed" through the Spark Cloud
+ * so that you can call them with GET:
+ * 	GET /v1/devices/{DEVICE_ID}/{VARIABLE}
+ * and POST:
+ * 	POST device/{FUNCTION}
+ */
 void setup()
 {
 	pinMode(LED, OUTPUT);
