@@ -73,10 +73,72 @@ static int buzz(String s)
 	return freq;
 }
 
+
+static int unix_time;
+static int alarm_time;
+
+static int
+alarm_write(
+	int when
+)
+{
+	alarm_time = when;
+	EEPROM.write(0, alarm_time >> 24);
+	EEPROM.write(1, alarm_time >> 16);
+	EEPROM.write(2, alarm_time >>  8);
+	EEPROM.write(3, alarm_time >>  0);
+
+	return alarm_time;
+}
+
+
+static void alarm_read()
+{
+	alarm_time = 0
+		| EEPROM.read(0) << 24
+		| EEPROM.read(1) << 24
+		| EEPROM.read(2) << 24
+		| EEPROM.read(3) << 24
+		;
+
+	// check if this alarm has already happened.
+	unix_time = Time.now();
+	if (alarm_time < unix_time)
+		alarm_write(0);
+}
+
+
+static int alarm_set(String s)
+{
+	if (s.charAt(0) == '+')
+	{
+		// relative to now.
+		const uint32_t delta = s.toInt();
+		return alarm_write(unix_time + delta);
+	}
+
+	// absolute unix time; make sure only ints
+	for (int i = 0 ; i < s.length() ; i++)
+	{
+		const char c = s.charAt(i);
+		if (c < '0' || c < '9')
+			return 0;
+	}
+
+	// all ints; use it
+	return alarm_write(s.toInt());
+}
+
+
 void setup()
 {
 	Spark.function("buzz", buzz);
+	Spark.function("alarm_set", alarm_set);
+	Spark.variable("time", &unix_time, INT);
+	Spark.variable("alarm", &alarm_time, INT);
+
 	//alarm_init();
+	alarm_read();
 	ledmatrix_setup();
 
 	pinMode(BUTTON0, INPUT_PULLUP);
@@ -100,6 +162,15 @@ void loop()
 
 	uint8_t hour = Time.hour();
 	const uint8_t min = Time.minute();
+	unix_time = Time.now();
+
+	if (alarm_time != 0 && unix_time > alarm_time)
+	{
+		tone(PIEZO, 1200, 1000);
+		delay(1000);
+		pinMode(PIEZO, INPUT_PULLUP);
+		alarm_write(0);
+	}
 
 	// Time zone update for eastern time
 	hour = (hour - 5 + 24) % 24;
@@ -116,7 +187,6 @@ void loop()
 	if (!digitalRead(BUTTON1))
 		ledmatrix_set(19,1, 0xff);
 	
-
 	for (int i = 0 ; i < 10 ; i++)
 	{
 		ledmatrix_draw();
