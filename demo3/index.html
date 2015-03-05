@@ -31,13 +31,18 @@ LED: <span id="led_state" >???</span><br/>
 var device;
 
 /*
+ * Log us in and get a list of devices (spark cores).
+ *
  * As soon as the page loads, call the sparkLogin() function
- * to populate the "spark-login" div with the login box.
+ * to put a login box in the "spark-login" div.
  * Once a successful login has occured, the login box will be
  * hidden and the controls made visible. An attempt to get the
  * list of devices will then be made.
+ *
+ * login_success is called when a successful login happens, passing in data
+ * captured on login.
  */
-sparkLogin(function(data) {
+function login_success(data) {
 	// hide the login button and show the controls
 	document.getElementById("spark-login").style.display = "none";
 	document.getElementById("controls").style.display = "inline-block";
@@ -46,6 +51,8 @@ sparkLogin(function(data) {
 	// get the user's list of devices
 	spark.listDevices().then(handle_devices, alert);
 });
+
+sparkLogin(login_success);
 
 /*
  * This function is called once the login has completed and
