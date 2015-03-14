@@ -5,18 +5,41 @@
  * A2 latch?
  * A3 clock1
  * A4 clock2
+ *
+ * original total time per row: 1 ms
  */
 
 #define LED_DATA	A0
 #define LED_ENABLE	A1
 #define LED_LATCH	A2
-#define LED_CLOCK1	A3
-#define LED_CLOCK2	A4
+#define LED_CLOCK1	A4
+#define LED_CLOCK2	A3
 
 #define WIDTH 90
 #define HEIGHT 7
 
 static uint8_t fb[HEIGHT][WIDTH];
+
+/** Faster output to an IO pin.
+ * We've already verified that things are configured;
+ * just write directly to the mapped pin's gpio line.
+ */
+static void
+fast_write(
+	const uint16_t pin,
+	const uint8_t value
+)
+{
+	const STM32_Pin_Info * const p = &PIN_MAP[pin];
+
+	if (value == LOW)
+	{
+		p->gpio_peripheral->BRR = p->gpio_pin;
+	} else
+	{
+		p->gpio_peripheral->BSRR = p->gpio_pin;
+	}
+}
 
 void setup()
 {
@@ -59,10 +82,6 @@ row(
 	const uint8_t * const data
 )
 {
-	// turn on the pin
-	digitalWrite(row_pin, 0);
-	pinMode(row_pin, OUTPUT);
-
 	// clock 1 drops first, starting the cycle
 	digitalWrite(LED_CLOCK1, 0);
 	delayMicroseconds(10);
@@ -72,14 +91,11 @@ row(
 
 
 	// then the evens are clocked out
-	for (unsigned i = 1 ; i < WIDTH ; i+=2)
+	for (unsigned i = 0 ; i < WIDTH ; i+=2)
 	{
-		digitalWrite(LED_CLOCK1, 1);
-		//delayMicroseconds(1);
-		digitalWrite(LED_DATA, data[i] ?  1 : 0);
-		//delayMicroseconds(1);
-		digitalWrite(LED_CLOCK1, 0);
-		//delayMicroseconds(1);
+		fast_write(LED_CLOCK1, 1);
+		fast_write(LED_DATA, data[i] ?  1 : 0);
+		fast_write(LED_CLOCK1, 0);
 	}
 
 	// after the evens clock2 goes HIGH
@@ -87,41 +103,41 @@ row(
 	delayMicroseconds(1);
 
 	// and then the evens are clocked out
-	for (unsigned i = 0 ; i < WIDTH ; i+=2)
+	for (unsigned i = 1 ; i < WIDTH ; i+=2)
 	{
-		digitalWrite(LED_CLOCK2, 1);
-		//delayMicroseconds(1);
-		digitalWrite(LED_DATA, data[i] ?  1 : 0);
-		//delayMicroseconds(1);
-		digitalWrite(LED_CLOCK2, 0);
-		//delayMicroseconds(1);
+		fast_write(LED_CLOCK2, 1);
+		fast_write(LED_DATA, data[i] ?  1 : 0);
+		fast_write(LED_CLOCK2, 0);
 	}
 
 	// always return the data pin to zero
 	digitalWrite(LED_DATA, 0);
 
+	//// enable goes high a few microseconds before the clocks and latch
+	//digitalWrite(LED_ENABLE, 1);
 
-	// strobe the latch pin to signal that we have finished
-	// clocking out this row.
+	// latch goes high
 	digitalWrite(LED_LATCH, 1);
 	delayMicroseconds(1);
-/*
-	digitalWrite(LED_LATCH, 0);
-	delayMicroseconds(1);
-*/
 
-	// enable goes high a few microseconds before the clocks
-	digitalWrite(LED_ENABLE, 1);
-
-	// reset the clocks to their idle state
+	// then the reset the clocks to their idle state
 	digitalWrite(LED_CLOCK1, 1);
 	digitalWrite(LED_CLOCK2, 0);
 
-	delayMicroseconds(100);
+	// turn on the pin
+	digitalWrite(row_pin, 0);
+	pinMode(row_pin, OUTPUT);
+
+	//delay(100);
+	digitalWrite(LED_ENABLE, 0);
+	delayMicroseconds(400);
 
 	// turn off the pin
 	pinMode(row_pin, INPUT);
-	digitalWrite(LED_ENABLE, 0);
+
+	// disable the output
+	digitalWrite(LED_ENABLE, 1);
+	//delay(100);
 }
 
 
@@ -133,5 +149,5 @@ void loop()
 	row(D4, fb[4]);
 	row(D5, fb[5]);
 	row(D6, fb[6]);
-	row(D7, fb[7]);
+	row(D7, fb[0]);
 }
