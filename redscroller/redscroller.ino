@@ -69,7 +69,7 @@ void setup()
 	{
 		for (int x = 0 ; x < WIDTH ; x++)
 		{
-			fb[y][x] = (x % 8) > y ? 0 : 1;
+			fb[y][x] = (x % 8) > y ? 0 : (x*2);
 			//fb[y][x] = x < WIDTH/2; //(x^y) & 1;
 		}
 	}
@@ -79,7 +79,9 @@ void setup()
 static inline void
 row(
 	const int row_pin,
-	const uint8_t * const data
+	const uint8_t * const data,
+	const uint8_t bright,
+	const unsigned delay
 )
 {
 	// clock 1 drops first, starting the cycle
@@ -94,7 +96,7 @@ row(
 	for (unsigned i = 0 ; i < WIDTH ; i+=2)
 	{
 		fast_write(LED_CLOCK1, 1);
-		fast_write(LED_DATA, data[i] ?  1 : 0);
+		fast_write(LED_DATA, data[i] > bright ?  1 : 0);
 		fast_write(LED_CLOCK1, 0);
 	}
 
@@ -106,7 +108,7 @@ row(
 	for (unsigned i = 1 ; i < WIDTH ; i+=2)
 	{
 		fast_write(LED_CLOCK2, 1);
-		fast_write(LED_DATA, data[i] ?  1 : 0);
+		fast_write(LED_DATA, data[i] > bright ?  1 : 0);
 		fast_write(LED_CLOCK2, 0);
 	}
 
@@ -118,19 +120,20 @@ row(
 
 	// latch goes high
 	digitalWrite(LED_LATCH, 1);
-	delayMicroseconds(1);
+	//delayMicroseconds(1);
+
 
 	// then the reset the clocks to their idle state
 	digitalWrite(LED_CLOCK1, 1);
 	digitalWrite(LED_CLOCK2, 0);
 
 	// turn on the pin
+	digitalWrite(LED_ENABLE, 0);
 	digitalWrite(row_pin, 0);
 	pinMode(row_pin, OUTPUT);
 
 	//delay(100);
-	digitalWrite(LED_ENABLE, 0);
-	delayMicroseconds(400);
+	delayMicroseconds(delay);
 
 	// turn off the pin
 	pinMode(row_pin, INPUT);
@@ -143,11 +146,15 @@ row(
 
 void loop()
 {
-	row(D0, fb[1]);
-	row(D1, fb[2]);
-	row(D3, fb[3]);
-	row(D4, fb[4]);
-	row(D5, fb[5]);
-	row(D6, fb[6]);
-	row(D7, fb[0]);
+//for(unsigned i = 0; i < 256 ; i+=32)
+for(unsigned i = 0; i < 256 ; i+=64)
+{
+	row(D0, fb[1], i, i*4);
+	row(D1, fb[2], i, i*4);
+	row(D3, fb[3], i, i*4);
+	row(D4, fb[4], i, i*4);
+	row(D5, fb[5], i, i*4);
+	row(D6, fb[6], i, i*4);
+	row(D7, fb[0], i, i*4);
+}
 }
