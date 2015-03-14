@@ -84,7 +84,7 @@ row(
 {
 	// clock 1 drops first, starting the cycle
 	digitalWrite(LED_CLOCK1, 0);
-	delayMicroseconds(10);
+	//delayMicroseconds(10);
 
 	// a few microseconds later latch goes low
 	digitalWrite(LED_LATCH, 0);
