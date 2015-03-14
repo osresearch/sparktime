@@ -144,17 +144,39 @@ row(
 }
 
 
+static const unsigned bright[] = {
+	1,
+	10,
+	20,
+	40,
+	80,
+	160,
+	250,
+	400
+};
+
 void loop()
 {
-//for(unsigned i = 0; i < 256 ; i+=32)
-for(unsigned i = 0; i < 256 ; i+=64)
+for(unsigned x = 0; x < 1024 ; x++)
 {
-	row(D0, fb[1], i, i*4);
-	row(D1, fb[2], i, i*4);
-	row(D3, fb[3], i, i*4);
-	row(D4, fb[4], i, i*4);
-	row(D5, fb[5], i, i*4);
-	row(D6, fb[6], i, i*4);
-	row(D7, fb[0], i, i*4);
+for(unsigned i = 0; i < 8 ; i++)
+{
+	row(D0, fb[1], i*256/8, bright[i]);
+	row(D1, fb[2], i*256/8, bright[i]);
+	row(D3, fb[3], i*256/8, bright[i]);
+	row(D4, fb[4], i*256/8, bright[i]);
+	row(D5, fb[5], i*256/8, bright[i]);
+	row(D6, fb[6], i*256/8, bright[i]);
+	row(D7, fb[0], i*256/8, bright[i]);
 }
+}
+/*
+	row(D0, fb[1], 0, 400);
+	row(D1, fb[2], 0, 400);
+	row(D3, fb[3], 0, 400);
+	row(D4, fb[4], 0, 400);
+	row(D5, fb[5], 0, 400);
+	row(D6, fb[6], 0, 400);
+	row(D7, fb[0], 0, 400);
+*/
 }
