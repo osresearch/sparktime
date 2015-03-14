@@ -46,7 +46,8 @@ void setup()
 	{
 		for (int x = 0 ; x < WIDTH ; x++)
 		{
-			fb[y][x] = (x % 8) > y ? 0 : 1;
+			//fb[y][x] = (x % 8) > y ? 0 : 1;
+			fb[y][x] = y & 1;
 		}
 	}
 }
