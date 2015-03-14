@@ -146,10 +146,10 @@ row(
 
 static const unsigned bright[] = {
 	1,
-	10,
-	20,
-	40,
-	80,
+	30,
+	60,
+	90,
+	120,
 	160,
 	250,
 	400
@@ -157,7 +157,7 @@ static const unsigned bright[] = {
 
 void loop()
 {
-for(unsigned x = 0; x < 1024 ; x++)
+for(unsigned x = 0; x < 256 ; x++)
 {
 for(unsigned i = 0; i < 8 ; i++)
 {
