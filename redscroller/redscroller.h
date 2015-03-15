@@ -34,10 +34,19 @@ ledmatrix_set(
 	const uint8_t bright
 );
 
+
 extern void
 draw_string(
 	const char outText[]
 );
+
+
+void
+draw_char(
+	unsigned col,
+	const char c
+);
+
 
 extern void
 draw_time(
