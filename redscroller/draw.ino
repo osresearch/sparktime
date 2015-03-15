@@ -24,7 +24,7 @@ draw_string(
 }
 
 
-static void
+void
 draw_small_digit(
 	uint8_t column,
 	unsigned digit,

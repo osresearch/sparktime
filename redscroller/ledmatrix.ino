@@ -21,11 +21,11 @@
 #define LED_ENABLE	A6
 #define ROW0		D0
 #define ROW1		D1
-#define ROW2		D2
-#define ROW3		D3
-#define ROW4		D4
-#define ROW5		D5
-#define ROW6		D6
+#define ROW2		D3
+#define ROW3		D4
+#define ROW4		D5
+#define ROW5		D6
+#define ROW6		D7
 #else
 // teensy 3.1
 #define LED_LATCH	10
@@ -202,13 +202,13 @@ void pwm_loop()
 
 void binary_loop()
 {
-	row(ROW0, fb[0], 0, 400);
-	row(ROW1, fb[1], 0, 400);
-	row(ROW2, fb[2], 0, 400);
-	row(ROW3, fb[3], 0, 400);
-	row(ROW4, fb[4], 0, 400);
-	row(ROW5, fb[5], 0, 400);
-	row(ROW6, fb[6], 0, 400);
+	row(ROW0, fb[0], 0, 200);
+	row(ROW1, fb[1], 0, 200);
+	row(ROW2, fb[2], 0, 200);
+	row(ROW3, fb[3], 0, 200);
+	row(ROW4, fb[4], 0, 200);
+	row(ROW5, fb[5], 0, 200);
+	row(ROW6, fb[6], 0, 200);
 }
 
 void ledmatrix_draw()

@@ -47,6 +47,12 @@ draw_char(
 	const char c
 );
 
+void
+draw_small_digit(
+	uint8_t column,
+	unsigned digit,
+	unsigned blinking
+);
 
 extern void
 draw_time(
