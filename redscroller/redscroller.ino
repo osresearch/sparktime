@@ -7,5 +7,7 @@ void setup()
 
 void loop()
 {
+	draw_clear();
+	draw_string("Hello world!@");
 	ledmatrix_draw();
 }

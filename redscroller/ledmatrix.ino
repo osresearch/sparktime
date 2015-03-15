@@ -9,6 +9,7 @@
  *
  * original total time per row: 1 ms
  */
+#include "redscroller.h"
 
 #define SPARK_CORE
 #ifdef SPARK_CORE
@@ -41,9 +42,6 @@
 #define ROW5		20
 #define ROW6		21
 #endif
-
-#define WIDTH 90
-#define HEIGHT 7
 
 static uint8_t fb[HEIGHT][WIDTH];
 
@@ -220,4 +218,33 @@ void ledmatrix_draw()
 #else
 		pwm_loop();
 #endif
+}
+
+
+/** Set an entire column at once */
+void
+ledmatrix_set_col(
+	const uint8_t col,
+	const uint8_t bits,
+	const uint8_t bright
+)
+{
+/*
+	uint8_t * p = &fb[0][WIDTH-1-col];
+	for (uint8_t i = 0 ; i < HEIGHT, p += WIDTH ; i++)
+		*p = (bits & (1 << i)) ? bright : 0;
+*/
+	for (uint8_t i = 0 ; i < HEIGHT ; i++)
+		ledmatrix_set(col, i, (bits & (1 << i)) ? bright : 0);
+}
+
+
+void
+ledmatrix_set(
+	const uint8_t col,
+	const uint8_t row,
+	const uint8_t bright
+)
+{
+	fb[row][col] = bright;
 }

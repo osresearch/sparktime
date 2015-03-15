@@ -16,11 +16,11 @@ draw_char(
  */
 void
 draw_string(
-	const char outText[]
+	const char * outText
 )
 {
-	for (int i=0 ; i < 4 ; i++)
-		draw_char(5*i+1, outText[i]);
+	for (int i=1 ; i < WIDTH && *outText ; i+=5)
+		draw_char(i, *outText++);
 }
 
 
