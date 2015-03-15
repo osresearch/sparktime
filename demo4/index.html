@@ -1,0 +1,142 @@
+<html>
+<head>
+<title>Spark Time Demo</title>
+<script
+	type="text/javascript"
+	src="https://cdn.jsdelivr.net/sparkjs/0.2.6/spark.min.js"
+>
+</script>
+</head>
+<body>
+
+<!-- This div will hold the login widget -->
+<div id="spark-login"></div>
+
+<div id="controls" style="display:none;">
+<form>
+Devices:
+<div id="devices"></div>
+</form>
+
+Time: <span id="time">???</span><br/>
+Knob: <span id="knob">???</span><br/>
+
+<a onclick="javascript:logout()">Logout</a>
+</div>
+
+<script>
+/*
+ * Once the list of devices has been fetched, one will be
+ * selected and stored in this global.
+ */
+var device;
+
+/*
+ * As soon as the page loads, call the sparkLogin() function
+ * to populate the "spark-login" div with the login box.
+ * Once a successful login has occured, the login box will be
+ * hidden and the controls made visible. An attempt to get the
+ * list of devices will then be made.
+ */
+var access_token = document.cookie.replace(/(?:(?:^|.*;\s*)sparkcore_token\s*\=\s*([^;]*).*$)|^.*$/, "$1")
+if (access_token)
+{
+	spark.login({accessToken: access_token}).then(successful_login, logout);
+} else {
+	sparkLogin(successful_login);
+}
+
+function successful_login(data) {
+	// hide the login button and show the controls
+	document.getElementById("spark-login").style.display = "none";
+	document.getElementById("controls").style.display = "inline-block";
+	console.log(data);
+
+	// store the access token in a cookie so that we don't have to
+	// require a login every time.
+	document.cookie = "sparkcore_token="+data.access_token;
+
+	// get the user's list of devices
+	spark.listDevices().then(handle_devices, alert);
+}
+
+
+/*
+ * Delete the access token cookie and should force a refresh
+ */
+function logout()
+{
+	document.cookie = "sparkcore_token=; max-age=0"
+	location.reload();
+}
+
+/*
+ * This function is called once the login has completed and
+ * requested the list of devices from the spark.io server.
+ * It will generate the radio boxes for the available cores,
+ * marking the first online one by default.
+ */
+function handle_devices(devices_arg)
+{
+	devices = devices_arg;
+	console.log(devices);
+	var div = document.getElementById("devices");
+	for (i in devices)
+	{
+		var d = devices[i];
+		var sel = document.createElement('input');
+		var lab = document.createElement('label');
+		sel.setAttribute('type', 'radio');
+		sel.setAttribute('name', 'device');
+		lab.setAttribute('for', d.id + '');
+		lab.innerHTML = d.name + (d.connected ? "" : " (Offline)") + "<br/>";
+
+		lab.onclick = sel.onclick = function() {
+			device = d;
+			//device.subscribe("knob", update_knob);
+		};
+
+		if (!device && d.connected)
+		{
+			sel.onclick();
+			sel.checked = true;
+		}
+
+		div.appendChild(sel);
+		div.appendChild(lab);
+	}
+}
+
+/*
+ * Start a timer every 1 second to read the current time,
+ * but only if there is a currently selected device.
+ */
+var interval = setInterval(function() {
+	if (!device)
+		return;
+
+	device.getVariable('time', function(err,data) {
+		if (err) return alert(err);
+
+		document.getElementById("time").innerHTML = data.result;
+	});
+	device.getVariable('knob', function(err,data) {
+		if (err) return alert(err);
+
+		document.getElementById("knob").innerHTML = data.result;
+	});
+}, 1000);
+
+
+/*
+ * As knob events come in, update the display.
+ */
+function update_knob(data)
+{
+	console.log(data);
+}
+
+</script>
+
+</body>
+</html>
