@@ -19,11 +19,54 @@ void setup()
 	draw_string("redscroller");
 }
 
+
+static unsigned
+draw_num(
+	unsigned y,
+	unsigned n,
+	unsigned digits
+)
+{
+	
+	y += digits * 6;
+	for(unsigned i = 0 ; i < digits ; i++)
+	{
+		if (y >= WIDTH)
+			return WIDTH;
+		y -= 6;
+		draw_char(y, '0' + (n % 10));
+		n /= 10;
+	}
+
+	return y + digits * 6;
+}
+
+static unsigned
+draw_num_small(
+	unsigned y,
+	unsigned n,
+	unsigned digits
+)
+{
+	y += digits * 4;
+	for(unsigned i = 0 ; i < digits ; i++)
+	{
+		if (y >= WIDTH)
+			return WIDTH;
+
+		y -= 4;
+		draw_small_digit(y, (n % 10), 0xFF);
+		n /= 10;
+	}
+
+	return y + digits * 4;
+}
+
 void loop()
 {
 	static uint32_t last_sync;
 	const uint32_t now_millis = millis();
-	static unsigned last_second;
+	static uint32_t last_millis;
 
 	if (now_millis - last_sync > ONE_DAY_MILLIS)
 	{
@@ -32,64 +75,43 @@ void loop()
 		return;
 	}
 
-	unsigned cur_sec = now_millis / 1000;
-
-	if (cur_sec != last_second)
+	if (now_millis > last_millis + 1000)
 	{
-		last_second = cur_sec;
+		last_millis = now_millis;
 
 		// 012345678901234567
 		// YYYYMMDD HHMMSS.
 		unsigned y = 0; // pad the first few chars
 
 		unsigned year = Time.year();
-		unsigned month = Time.month();
+		unsigned mon = Time.month();
 		unsigned day = Time.day();
 
 		draw_clear();
-		ledmatrix_set_col(2, 0xAA, 0xFF);
-		ledmatrix_set_col(3, 0x55, 0xFF);
-		ledmatrix_set_col(3, 1 << (last_second & 7), 0xFF);
 
-
-		draw_small_digit(y += 4, (year / 1000) % 10, 0);
-		draw_small_digit(y += 4, (year / 100) % 10, 0);
-		draw_small_digit(y += 4, (year / 10) % 10, 0);
-		draw_small_digit(y += 4, (year / 1) % 10, 0);
-
-		ledmatrix_set_col(y++ + 3, 0xFF, 0xFF);
-		//y++;
-
-		draw_small_digit(y += 4, (month / 10) % 10, 0);
-		draw_small_digit(y += 4, (month / 1) % 10, 0);
-		y++;
-
-		draw_small_digit(y += 4, (day / 10) % 10, 0);
-		draw_small_digit(y += 4, (day / 1) % 10, 0);
-		y++;
+		y = draw_num_small(y, year, 4) + 2;
+		ledmatrix_set_col(y-2, 0x08, 0xFF);
+		y = draw_num_small(y, mon, 2) + 2;
+		ledmatrix_set_col(y-2, 0x08, 0xFF);
+		y = draw_num_small(y, day, 2) + 2;
 
 		unsigned hour = Time.hour();
 		unsigned min = Time.minute();
 		unsigned sec = Time.second();
 
-		draw_small_digit(y += 4, (hour / 10) % 10, 0);
-		draw_small_digit(y += 4, (hour / 1) % 10, 0);
-		y++;
-		draw_small_digit(y += 4, (min / 10) % 10, 0);
-		draw_small_digit(y += 4, (min / 1) % 10, 0);
-		y++;
-		draw_small_digit(y += 4, (sec / 10) % 10, 0);
-		draw_small_digit(y += 4, (sec / 1) % 10, 0);
-		y++;
+		// draw the HH:MM:SS with colons inbetween
+		y = draw_num(y, hour, 2) + 2;
+		ledmatrix_set_col(y-2, 0x14, 0xFF);
+		y = draw_num(y, min, 2) + 2;
+		ledmatrix_set_col(y-2, 0x14, 0xFF);
+		y = draw_num(y, sec, 2) + 2;
 	}
 
-	for (int i = 0 ; i < 128 ; i++)
+	for (int i = 0 ; i < 256 ; i++)
 	{
-		unsigned ms = millis() % 1000;
-		unsigned y = 62;
-		draw_small_digit(y += 4, (ms / 100) % 10, 0);
-		draw_small_digit(y += 4, (ms / 10) % 10, 0);
-		draw_small_digit(y += 4, (ms / 1) % 10, 0);
+		unsigned ms = (millis() / 10) % 100;
+		unsigned y = 80;
+		draw_num_small(y, ms, 2);
 
 		ledmatrix_draw();
 	}

@@ -202,13 +202,13 @@ void pwm_loop()
 
 void binary_loop()
 {
-	row(ROW0, fb[0], 0, 200);
-	row(ROW1, fb[1], 0, 200);
-	row(ROW2, fb[2], 0, 200);
-	row(ROW3, fb[3], 0, 200);
-	row(ROW4, fb[4], 0, 200);
-	row(ROW5, fb[5], 0, 200);
-	row(ROW6, fb[6], 0, 200);
+	row(ROW0, fb[0], 0, 400);
+	row(ROW1, fb[1], 0, 400);
+	row(ROW2, fb[2], 0, 400);
+	row(ROW3, fb[3], 0, 400);
+	row(ROW4, fb[4], 0, 400);
+	row(ROW5, fb[5], 0, 400);
+	row(ROW6, fb[6], 0, 400);
 }
 
 void ledmatrix_draw()
