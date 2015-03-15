@@ -75,7 +75,7 @@ void loop()
 		return;
 	}
 
-	if (now_millis > last_millis + 1000)
+	//if (now_millis > last_millis + 900)
 	{
 		last_millis = now_millis;
 
@@ -107,7 +107,7 @@ void loop()
 		y = draw_num(y, sec, 2) + 2;
 	}
 
-	for (int i = 0 ; i < 256 ; i++)
+	//for (int i = 0 ; i < 128 ; i++)
 	{
 		unsigned ms = (millis() / 10) % 100;
 		unsigned y = 80;
