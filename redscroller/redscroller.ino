@@ -81,7 +81,7 @@ void loop()
 
 		// 012345678901234567
 		// YYYYMMDD HHMMSS.
-		unsigned y = 10; // pad the first few chars
+		unsigned y = 9; // pad the first few chars
 
 		unsigned year = Time.year();
 		unsigned mon = Time.month();

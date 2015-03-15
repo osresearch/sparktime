@@ -141,8 +141,8 @@ const uint8_t LETTERS[][5] = {
 	// 0
 	{
 		__XXXXX_,
-		_X_____X,
-		_X_____X,
+		_X_X___X,
+		_X___X_X,
 		__XXXXX_,
 		________,
 	},
@@ -490,9 +490,9 @@ const uint8_t LETTERS[][5] = {
 	{
 		___XXX__,
 		__X_X_X_,
-		_X_X___X,
-		_X__X__X,
 		_X___X_X,
+		_X__X__X,
+		_X_X___X,
 	},
 	// back slash
 	{
@@ -504,9 +504,9 @@ const uint8_t LETTERS[][5] = {
 	},
 	// NYCR part 2
 	{
-		_X__X__X,
 		__X_X_X_,
 		___XXX__,
+		________,
 		________,
 		________,
 	},
