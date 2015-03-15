@@ -485,6 +485,32 @@ const uint8_t LETTERS[][5] = {
 		_X____XX,
 	},
 
+#if 1
+	// NYCR part 1
+	{
+		___XXX__,
+		__X_X_X_,
+		_X_X___X,
+		_X__X__X,
+		_X___X_X,
+	},
+	// back slash
+	{
+		______X_,
+		_____X__,
+		____X___,
+		___X____,
+		__X_____,
+	},
+	// NYCR part 2
+	{
+		_X__X__X,
+		__X_X_X_,
+		___XXX__,
+		________,
+		________,
+	},
+#else
 	// [
 	{
 		________,
@@ -509,6 +535,7 @@ const uint8_t LETTERS[][5] = {
 		_XXXXXXX,
 		________,
 	},
+#endif
 	// ^
 	{
 		________,
@@ -875,22 +902,6 @@ const uint8_t GRAPHIC[ ][5] = {
 		________,
 		________,
 		________,
-	},
-	// Speaker cone
-	{
-		________,
-		___XXX__,
-		__XXXXX_,
-		_XXXXXXX,
-		________,
-	},
-	// Sound wave
-	{
-		__X___X_,
-		___XXX__,
-		_X_____X,
-		__X___X_,
-		___XXX__,
 	},
 	// Check mark
 	{

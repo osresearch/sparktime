@@ -81,13 +81,15 @@ void loop()
 
 		// 012345678901234567
 		// YYYYMMDD HHMMSS.
-		unsigned y = 3; // pad the first few chars
+		unsigned y = 10; // pad the first few chars
 
 		unsigned year = Time.year();
 		unsigned mon = Time.month();
 		unsigned day = Time.day();
 
 		draw_clear();
+		draw_char(0, '[');
+		draw_char(5, ']');
 
 		y = draw_num_small(y, year, 4) + 2;
 		ledmatrix_set_col(y-2, 0x08, 0xFF);
@@ -99,7 +101,8 @@ void loop()
 		unsigned min = Time.minute();
 		unsigned sec = Time.second();
 
-		y += 2;
+		//y += 2;
+		y--;
 
 		// draw the HH:MM:SS with colons inbetween
 		y = draw_num(y, hour, 2) + 2;
@@ -112,7 +115,7 @@ void loop()
 	//for (int i = 0 ; i < 128 ; i++)
 	{
 		unsigned ms = (millis() / 10) % 100;
-		unsigned y = 80;
+		unsigned y = 81;
 		draw_num_small(y, ms, 2);
 
 		ledmatrix_draw();
