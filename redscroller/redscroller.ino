@@ -28,17 +28,17 @@ draw_num(
 )
 {
 	
-	y += digits * 6;
+	y += digits * 5;
 	for(unsigned i = 0 ; i < digits ; i++)
 	{
 		if (y >= WIDTH)
 			return WIDTH;
-		y -= 6;
+		y -= 5;
 		draw_char(y, '0' + (n % 10));
 		n /= 10;
 	}
 
-	return y + digits * 6;
+	return y + digits * 5;
 }
 
 static unsigned
@@ -81,7 +81,7 @@ void loop()
 
 		// 012345678901234567
 		// YYYYMMDD HHMMSS.
-		unsigned y = 0; // pad the first few chars
+		unsigned y = 3; // pad the first few chars
 
 		unsigned year = Time.year();
 		unsigned mon = Time.month();
@@ -98,6 +98,8 @@ void loop()
 		unsigned hour = Time.hour();
 		unsigned min = Time.minute();
 		unsigned sec = Time.second();
+
+		y += 2;
 
 		// draw the HH:MM:SS with colons inbetween
 		y = draw_num(y, hour, 2) + 2;
