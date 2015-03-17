@@ -488,8 +488,8 @@ const uint8_t LETTERS[][5] = {
 #if 1
 	// NYCR part 1
 	{
-		___XXX__,
-		__X_X_X_,
+		___XXXX_,
+		__X_X__X,
 		_X___X_X,
 		_X__X__X,
 		_X_X___X,
@@ -504,8 +504,8 @@ const uint8_t LETTERS[][5] = {
 	},
 	// NYCR part 2
 	{
-		__X_X_X_,
-		___XXX__,
+		_X__X_X_,
+		__XXXX__,
 		________,
 		________,
 		________,
